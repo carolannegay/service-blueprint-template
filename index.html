@@ -1,0 +1,1498 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="page-title">Service Blueprint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --blue: #0c62fb;
+        --blue-2: #5b9aff;
+        --blue-deep: #1a3a7a;
+        --navy: #111827;
+        --walnut: #6e3718;
+        --white: #ffffff;
+        --text: #1a1a1a;
+        --muted: #6b7280;
+        --bg: #f3f4f6;
+        --border: #e5e7eb;
+        --front-bar: #ebf2ff;
+        --front-bar-text: #0c62fb;
+        --back-bar: #eef2ff;
+        --back-bar-text: #4338ca;
+        --pain-bg: #fef2f2;
+        --pain-border: #ef4444;
+        --neutral-bg: #fffbeb;
+        --neutral-border: #d97706;
+        --gain-bg: #f0fdf4;
+        --gain-border: #10b981;
+        --moment-bg: #eff6ff;
+        --moment-border: #93c5fd;
+        --card-shadow: rgba(17, 24, 39, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        height: 64px;
+        background: rgba(255, 255, 255, 0.98);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 22px 0 18px;
+      }
+
+      .title-group {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+      }
+
+      .title-line {
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: var(--blue);
+        text-transform: uppercase;
+        margin: 0;
+      }
+
+      .subtitle-line {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .subtitle-line strong {
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .presenter-toggle {
+        border: none;
+        background: var(--blue);
+        color: var(--white);
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 8px 16px rgba(12, 98, 251, 0.18);
+      }
+
+      .slalom-wordmark {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        color: var(--blue);
+        padding-left: 10px;
+      }
+
+      .content-shell {
+        position: relative;
+        display: flex;
+        align-items: stretch;
+        min-height: calc(100vh - 64px);
+      }
+
+      .blueprint-scroll {
+        flex: 1 1 auto;
+        overflow-x: auto;
+        padding: 0;
+      }
+
+      table {
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: auto;
+        width: max-content;
+        min-width: 100%;
+        background: var(--white);
+      }
+
+      colgroup col:first-child {
+        width: 160px;
+      }
+
+      colgroup col:not(:first-child) {
+        width: 200px;
+      }
+
+      .corner-cell,
+      .phase-header-cell,
+      .lane-label,
+      .blueprint-cell,
+      .big-section-cell,
+      .visibility-cell,
+      .summary-cell {
+        border-right: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+
+      .corner-cell {
+        background: transparent;
+        color: transparent;
+        font-weight: 800;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 0;
+        border: 0;
+        position: sticky;
+        left: 0;
+        z-index: 30;
+        text-align: left;
+      }
+
+      .phase-header-cell {
+        background: var(--blue);
+        color: var(--white);
+        font-weight: 800;
+        font-size: 13px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        text-align: center;
+        padding: 18px 10px;
+        position: sticky;
+        top: 0;
+        scroll-margin-top: 64px;
+        z-index: 15;
+      }
+
+      .phase-header-cell.active-phase {
+        box-shadow: inset 0 0 0 2px rgba(255,255,255,0.8);
+      }
+
+      .lane-label {
+        position: sticky;
+        left: 0;
+        z-index: 12;
+        background: #f3f4f6;
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        min-width: 160px;
+        padding: 16px 12px;
+        border-left: 1px solid var(--border);
+      }
+
+      .lane-label.section-label {
+        background: var(--front-bar);
+        color: var(--front-bar-text);
+        padding-top: 6px;
+        padding-bottom: 6px;
+      }
+
+      .lane-label.back-section-label {
+        background: var(--front-bar);
+        color: var(--front-bar-text);
+        padding-top: 6px;
+        padding-bottom: 6px;
+      }
+
+      .big-section-cell {
+        background: var(--front-bar);
+        color: var(--front-bar-text);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 10px 12px;
+      }
+
+      .big-section-cell.front-stage-empty-cell {
+        padding: 0;
+      }
+
+      .big-section-cell.back-stage-empty-cell {
+        padding: 0;
+      }
+
+      .back-section-cell {
+        background: var(--front-bar);
+        color: var(--front-bar-text);
+      }
+
+      .blueprint-cell,
+      .summary-cell {
+        background: var(--white);
+        color: var(--text);
+        padding: 12px 10px;
+      }
+
+      .moment-cell {
+        background: var(--moment-bg);
+        border-left: 3px solid var(--moment-border);
+      }
+
+      .moment-card {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+
+      .moment-icon {
+        width: 20px;
+        height: 20px;
+        flex: 0 0 20px;
+        object-fit: contain;
+      }
+
+      .moment-icon-fallback {
+        color: var(--blue);
+        font-size: 18px;
+        line-height: 16px;
+        text-align: center;
+      }
+
+      .moment-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .sentiment-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 6px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .sentiment-pill .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .sentiment-pain {
+        background: var(--pain-bg);
+        color: #991b1b;
+      }
+      .sentiment-pain .dot { background: var(--pain-border); }
+
+      .sentiment-neutral {
+        background: var(--neutral-bg);
+        color: #92400e;
+      }
+      .sentiment-neutral .dot { background: var(--neutral-border); }
+
+      .sentiment-gain {
+        background: var(--gain-bg);
+        color: #166534;
+      }
+      .sentiment-gain .dot { background: var(--gain-border); }
+
+      .action-title {
+        display: block;
+        font-weight: 700;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .inline-detail {
+        margin-top: 8px;
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--text);
+      }
+
+      .action-cell {
+        border-left: 3px solid transparent;
+      }
+
+      .action-cell.pain {
+        background: var(--pain-bg);
+        border-left-color: var(--pain-border);
+      }
+      .action-cell.neutral {
+        background: var(--neutral-bg);
+        border-left-color: var(--neutral-border);
+      }
+      .action-cell.gain {
+        background: var(--gain-bg);
+        border-left-color: var(--gain-border);
+      }
+
+      .touchpoint-list,
+      .mini-card-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .touchpoint-item,
+      .mini-card {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        border-radius: 999px;
+        background: #ebf2ff;
+        color: var(--blue);
+        font-size: 11px;
+        line-height: 1.2;
+        padding: 5px 8px;
+        border: 1px solid rgba(12, 98, 251, 0.15);
+      }
+
+      .mini-card-list {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .mini-card {
+        width: 100%;
+        border-radius: 8px;
+        background: var(--white);
+        border-left: 3px solid var(--blue);
+        border-top: 1px solid var(--border);
+        border-right: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 1px 3px var(--card-shadow);
+        padding: 8px 10px;
+        color: var(--text);
+        text-align: left;
+        justify-content: flex-start;
+      }
+
+      .mini-card.small {
+        border-radius: 6px;
+        background: #f8fafc;
+      }
+
+      .mini-card-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .card-title {
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .button-inline {
+        appearance: none;
+        border: none;
+        background: transparent;
+        color: var(--blue);
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.02em;
+        padding: 0;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .button-inline:hover { text-decoration: underline; }
+
+      .cta-row {
+        margin-top: 10px;
+      }
+
+      .visibility-row {
+        background: var(--white);
+      }
+
+      .visibility-cell {
+        background: var(--bg);
+        position: relative;
+        height: 18px;
+        padding: 0;
+        border: 0;
+      }
+
+      .visibility-cell::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: repeating-linear-gradient(90deg, #111827 0 5px, transparent 5px 10px);
+        transform: translateY(-50%);
+      }
+
+      .lane-label.visibility-label {
+        background: var(--bg);
+        color: #111827;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        padding: 4px 8px;
+      }
+
+      .summary-cell {
+        background: var(--blue);
+        color: var(--white);
+        padding: 10px 12px;
+      }
+
+      .summary-inline {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .summary-label {
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.9;
+      }
+
+      .summary-text {
+        font-size: 12px;
+        line-height: 1.45;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .summary-button {
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 999px;
+        padding: 5px 8px;
+        font-size: 11px;
+        font-weight: 700;
+        width: fit-content;
+      }
+
+      .detail-panel {
+        position: fixed;
+        top: 64px;
+        right: 0;
+        width: 340px;
+        height: calc(100vh - 64px);
+        background: rgba(255,255,255,0.98);
+        border-left: 1px solid var(--border);
+        box-shadow: -10px 0 26px rgba(17, 24, 39, 0.08);
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        z-index: 60;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .detail-panel.visible {
+        transform: translateX(0);
+      }
+
+      .detail-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 18px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .detail-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: #ebf2ff;
+        color: var(--blue);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .detail-close {
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        font-size: 26px;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .detail-content {
+        padding: 18px;
+      }
+
+      .detail-title {
+        margin: 0 0 12px;
+        font-size: 16px;
+        line-height: 1.5;
+        color: var(--text);
+      }
+
+      .detail-body {
+        margin: 0;
+        font-size: 13px;
+        color: var(--text);
+        line-height: 1.75;
+      }
+
+      .presenter-nav {
+        position: fixed;
+        left: 50%;
+        bottom: 18px;
+        transform: translateX(-50%);
+        background: rgba(17, 24, 39, 0.88);
+        color: var(--white);
+        border-radius: 999px;
+        padding: 10px 18px;
+        display: none;
+        align-items: center;
+        gap: 18px;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        z-index: 80;
+      }
+
+      body.presenter-mode .presenter-nav {
+        display: flex;
+      }
+
+      .presenter-nav button {
+        background: transparent;
+        color: var(--white);
+        border: none;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 700;
+      }
+
+      body.presenter-mode .phase-header-cell {
+        opacity: 0.18;
+      }
+
+      body.presenter-mode .phase-header-cell.active-phase {
+        opacity: 1;
+        box-shadow: inset 0 0 0 2px rgba(255,255,255,0.9), 0 0 0 3px rgba(12, 98, 251, 0.25);
+      }
+
+      body.presenter-mode .phase-col-0,
+      body.presenter-mode .phase-col-1,
+      body.presenter-mode .phase-col-2,
+      body.presenter-mode .phase-col-3,
+      body.presenter-mode .phase-col-4,
+      body.presenter-mode .phase-col-5,
+      body.presenter-mode .phase-col-6,
+      body.presenter-mode .phase-col-7,
+      body.presenter-mode .phase-col-8,
+      body.presenter-mode .phase-col-9,
+      body.presenter-mode .phase-col-10,
+      body.presenter-mode .phase-col-11 {
+        opacity: 0.18;
+        transition: opacity 0.18s ease;
+      }
+
+      body.presenter-mode [data-phase-index].phase-col-active {
+        opacity: 1;
+      }
+
+      body.presenter-mode .detail-panel {
+        display: none;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 900px) {
+        .topbar {
+          padding: 0 12px;
+          gap: 8px;
+        }
+
+        .header-actions {
+          gap: 8px;
+        }
+
+        .presenter-toggle {
+          padding: 9px 12px;
+          font-size: 12px;
+        }
+
+        .slalom-wordmark {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="title-group">
+        <p class="title-line">Service Blueprint</p>
+        <div class="subtitle-line"><strong id="page-title">Service Blueprint</strong> · <span id="page-client-date">Client Name · Month Year</span></div>
+      </div>
+      <div class="header-actions">
+        <button id="presenterToggle" class="presenter-toggle" type="button">▶ Presenter Mode</button>
+        <div class="slalom-wordmark">SLALOM</div>
+      </div>
+    </header>
+
+    <div class="content-shell">
+      <div class="blueprint-scroll" id="blueprintScroll">
+        <table id="blueprintTable" aria-label="Service blueprint table"></table>
+      </div>
+
+      <aside id="detailPanel" class="detail-panel" aria-live="polite" aria-hidden="true">
+        <div class="detail-header">
+          <span id="detailTag" class="detail-tag">Detail</span>
+          <button id="closePanel" class="detail-close" type="button" aria-label="Close details">×</button>
+        </div>
+        <div class="detail-content">
+          <h2 id="detailTitle" class="detail-title">Detail title</h2>
+          <p id="detailBody" class="detail-body">Detail content</p>
+        </div>
+      </aside>
+    </div>
+
+    <nav id="presenterNav" class="presenter-nav" aria-label="Presenter navigation">
+      <button id="prevPhase" type="button">← Prev</button>
+      <span id="phaseIndicator">Phase 1 of 4</span>
+      <button id="nextPhase" type="button">Next →</button>
+      <button id="exitPresenter" type="button">✕ Exit</button>
+    </nav>
+
+    <script>
+      const CONFIG = {
+        title: 'Service Blueprint',
+        client: 'Northstar Labs',
+        date: 'September 2026',
+        labels: {
+          frontStageOpps: 'Opportunities',
+          backStageOpps: 'Recommendations'
+        },
+        phases: [
+          {
+            name: 'Discover',
+            moment: { title: 'Search intent shifts', detail: 'Prospects are moving from outbound discovery into self-directed research and digital validation before they engage a sales team.' },
+            actions: [
+              {
+                title: 'Evaluate product fit',
+                sentiment: 'pain',
+                detail: 'The buyer is comparing value and fit without enough confidence in the product story or technical relevance.',
+                touchpoints: ['Search', 'Pricing page', 'LinkedIn'],
+                touchpointsDetail: 'Prospect behavior is scattered across high-signal channels, and the experience is fragmented before any sales conversation begins.',
+                frontOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Personalized fit analysis', detail: 'Give buyers a compact, guided assessment of fit, value drivers, and common use cases.' }]
+                },
+                businessProcess: { title: 'Market qualification', detail: 'Review intent patterns and segment demand to align sales coverage and messaging.' },
+                technicalProcess: { title: 'Intent signal scoring', detail: 'Continuous analysis of search, community, and CRM behavior surfaces buying readiness.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Signal-to-playbook routing', detail: 'Automatically connect demand quality with the correct outreach sequence and sales context.' }]
+                }
+              },
+              {
+                title: 'Review customer evidence',
+                sentiment: 'neutral',
+                detail: 'Customers compare case studies and references as part of evaluating whether the vendor is credible and operationally mature.',
+                touchpoints: ['Case studies', 'Webinars', 'Reviews'],
+                touchpointsDetail: 'Evidence is available but not consistently organized by persona, role, or customer scenario.',
+                frontOpps: {
+                  mode: 'triple',
+                  items: [
+                    { title: 'Role-based proof', detail: 'Prime content by stakeholder concern.' },
+                    { title: 'Outcome metrics', detail: 'Show measurable business improvement.' },
+                    { title: 'Security assurance', detail: 'Highlight trust and compliance credibly.' }
+                  ]
+                },
+                businessProcess: { title: 'Content synthesis', detail: 'Curate proof points to reinforce relevance and reduce uncertainty during evaluation.' },
+                technicalProcess: { title: 'Content personalization engine', detail: 'Serve content variants aligned to buyer segment and account profile.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Narrative quality review', detail: 'Review proof sets regularly to ensure the strongest examples are surfaced first.' }]
+                }
+              },
+              {
+                title: 'Contact sales',
+                sentiment: 'gain',
+                detail: 'The moment the buyer requests value and sees an obvious path to a trusted conversation feels highly positive and energizing.',
+                touchpoints: ['Contact form', 'Chat', 'Sales call'],
+                touchpointsDetail: 'The contact experience is strongest when it is clear, quick, and guided by context.',
+                frontOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Fast connection with context', detail: 'Route buyers to the right team with urgency, context, and a short next-step path.' }]
+                },
+                businessProcess: { title: 'Inbound sales response', detail: 'Convert high-intent signals into a fast and informed first conversation.' },
+                technicalProcess: { title: 'Lead routing orchestration', detail: 'Score and route each inquiry to the right account owner and playbook.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Context-aware handoff', detail: 'Share account context and product fit signals automatically with sales.' }]
+                }
+              }
+            ],
+            summary: 'Buyers need a clearer path from intent to trust, with faster sales routing and more tailored proof.'
+          },
+          {
+            name: 'Evaluate',
+            moment: { title: 'Decision friction', detail: 'The buying team is balancing stakeholder concerns and operational risk during the evaluation stage.' },
+            actions: [
+              {
+                title: 'Compare alternatives',
+                sentiment: 'pain',
+                detail: 'Lack of side-by-side comparison causes wasted time and uncertainty in the vendor selection process.',
+                touchpoints: ['Product demo', 'RFP', 'Competitor comparison'],
+                touchpointsDetail: 'The evaluation experience is robust but difficult to compare without strong narrative framing.',
+                frontOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Decision scorecard', detail: 'Surface the criteria that matter most to each stakeholder in a single view.' }]
+                },
+                businessProcess: { title: 'Eval management', detail: 'Coordinate internal feedback and shape a decision-ready buying motion.' },
+                technicalProcess: { title: 'Evaluation workspace', detail: 'Track stakeholder questions, requirements, and decisions across the buying journey.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Decision insights dashboard', detail: 'Highlight the risk, confidence, and open questions for the sales team.' }]
+                }
+              },
+              {
+                title: 'Assess operational fit',
+                sentiment: 'neutral',
+                detail: 'Teams need practical evidence that implementation, reporting, and support match their operating model.',
+                touchpoints: ['Discovery session', 'Security review', 'Operational workshop'],
+                touchpointsDetail: 'Operational questions are often raised late and require a strong follow-up cadence.',
+                frontOpps: {
+                  mode: 'triple',
+                  items: [
+                    { title: 'Implementation map', detail: 'Show the rollout path in plain language.' },
+                    { title: 'Support preview', detail: 'Provide a realistic service picture.' },
+                    { title: 'Ownership clarity', detail: 'Define roles and escalation paths early.' }
+                  ]
+                },
+                businessProcess: { title: 'Solution design', detail: 'Translate use cases into a realistic and low-friction implementation plan.' },
+                technicalProcess: { title: 'Solution configuration model', detail: 'Support scoping and alignment across product, services, and implementation teams.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Implementation readiness checklist', detail: 'Surface dependencies earlier to reduce surprises after contract signature.' }]
+                }
+              },
+              {
+                title: 'Confirm purchase decision',
+                sentiment: 'gain',
+                detail: 'Confidence increases when the final decision is supported by a clear plan, clear ownership, and explicit next steps.',
+                touchpoints: ['Proposal', 'Legal review', 'Executive approval'],
+                touchpointsDetail: 'The path to closing is strongest when the process is structurally clear and low-friction.',
+                frontOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Decision-ready proposal', detail: 'Give stakeholders a concise confirmation of fit, cost, and rollout expectations.' }]
+                },
+                businessProcess: { title: 'Close management', detail: 'Align internal and external stakeholders to finalize commitment on the timetable that works.' },
+                technicalProcess: { title: 'Proposal generation', detail: 'Create accurate and contextualized commercial and operational proposals using account data.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Executive summary package', detail: 'Package key metrics, commitments, and timeline in a single buyer-friendly brief.' }]
+                }
+              }
+            ],
+            summary: 'The process needs clearer comparison and better confidence-building tools before close.'
+          },
+          {
+            name: 'Onboard',
+            moment: { title: 'Activation momentum', detail: 'The account enters a high-expectation stage where setup quality directly impacts perceived value.' },
+            actions: [
+              {
+                title: 'Set up workspace',
+                sentiment: 'pain',
+                detail: 'Initial setup is slow and requires too much coordination across multiple teams and systems.',
+                touchpoints: ['Onboarding checklist', 'Portal', 'Customer success call'],
+                touchpointsDetail: 'The onboarding path is real but lacks a single coherent progress model for the customer.',
+                frontOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Guided activation checklist', detail: 'Help customers know the exact setup steps, owners, and leads to move forward confidently.' }]
+                },
+                businessProcess: { title: 'Implementation kickoff', detail: 'Establish the plan, owners, and key success milestones for activation.' },
+                technicalProcess: { title: 'Activation workflow engine', detail: 'Automate onboarding milestones, handoff notices, and role assignment.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Milestone orchestration', detail: 'Trigger the right actions at the right time to keep activation on track.' }]
+                }
+              },
+              {
+                title: 'Train the team',
+                sentiment: 'neutral',
+                detail: 'The customer needs a clear plan for adoption that reduces overwhelm and supports first-time confidence.',
+                touchpoints: ['Training hub', 'Office hours', 'Documentation'],
+                touchpointsDetail: 'Enablement exists, but pathways are still too dispersed by role and maturity level.',
+                frontOpps: {
+                  mode: 'triple',
+                  items: [
+                    { title: 'Role-based guidance', detail: 'Lead each user to their specific starting point.' },
+                    { title: 'Task-based prompts', detail: 'Let users complete critical actions fast.' },
+                    { title: 'Early success nudges', detail: 'Celebrate first wins and build momentum.' }
+                  ]
+                },
+                businessProcess: { title: 'Training coordination', detail: 'Create a repeatable path to product confidence across the customer organization.' },
+                technicalProcess: { title: 'Learning path engine', detail: 'Serve the right training modules by persona, maturity, and business goal.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Role-based coaching', detail: 'Help each team achieve a first-success milestone without overwhelming them.' }]
+                }
+              },
+              {
+                title: 'Launch with confidence',
+                sentiment: 'gain',
+                detail: 'The first live usage milestone creates excitement and embeds product value in daily work.',
+                touchpoints: ['Launch checklist', 'Customer success review', 'Usage dashboard'],
+                touchpointsDetail: 'Launch confidence improves when the customer sees the next step, expected value, and support path at once.',
+                frontOpps: {
+                  mode: 'single',
+                  items: [{ title: 'First-value dashboard', detail: 'Help the customer see early wins and understand what success looks like next.' }]
+                },
+                businessProcess: { title: 'Activation review', detail: 'Validate the first live experience and remove any blockers before broader deployment.' },
+                technicalProcess: { title: 'Engagement telemetry', detail: 'Track early product adoption to identify moments of friction and confidence.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Activation health alerts', detail: 'Alert teams before adoption stalls or a milestone slips.' }]
+                }
+              }
+            ],
+            summary: 'Activation quality is the key lever for perceived value and retention in the first 90 days.'
+          },
+          {
+            name: 'Grow',
+            moment: { title: 'Expansion readiness', detail: 'The customer has a working product and is ready to deepen adoption or expand strategically.' },
+            actions: [
+              {
+                title: 'Track adoption',
+                sentiment: 'pain',
+                detail: 'Without clear adoption visibility, it is difficult to know if the product is delivering strategic value.',
+                touchpoints: ['Usage analytics', 'Executive updates', 'Renewal review'],
+                touchpointsDetail: 'Leadership wants insights that are both simple to understand and connected to business outcomes.',
+                frontOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Executive adoption snapshot', detail: 'Turn usage and operations data into a simple indicator of value and expansion potential.' }]
+                },
+                businessProcess: { title: 'Customer health review', detail: 'Monitor adoption, friction, and confidence to identify the right next intervention.' },
+                technicalProcess: { title: 'Usage intelligence layer', detail: 'Aggregate event and business data for a unified picture of real product value.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Expansion trigger model', detail: 'Identify accounts with readiness signals tied to growth opportunities and retention risk.' }]
+                }
+              },
+              {
+                title: 'Expand use cases',
+                sentiment: 'neutral',
+                detail: 'Customers see more value if the product supports a broader operational plan and clearly shares next opportunities.',
+                touchpoints: ['Roadmap meeting', 'Success planning', 'Product updates'],
+                touchpointsDetail: 'Expansion needs both a strong data story and a roadmap that matches customer priorities.',
+                frontOpps: {
+                  mode: 'triple',
+                  items: [
+                    { title: 'Roadmap alignment', detail: 'Align new features to business initiatives.' },
+                    { title: 'Co-sell opportunities', detail: 'Spot adjacent needs and growth opportunities.' },
+                    { title: 'Adoption patterns', detail: 'Identify segments ready for more advanced use.' }
+                  ]
+                },
+                businessProcess: { title: 'Growth planning', detail: 'Translate product confidence into a scalable and credible expansion roadmap.' },
+                technicalProcess: { title: 'Account expansion scoring', detail: 'Use customer behavior, account data, and product usage to identify likely expansion opportunities.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Opportunity suggestions', detail: 'Recommend natural next steps based on adoption patterns and strategic goals.' }]
+                }
+              },
+              {
+                title: 'Renew and grow',
+                sentiment: 'gain',
+                detail: 'The customer feels confidence when value is visible, reflected in outcomes, and backed by proactive planning.',
+                touchpoints: ['Renewal review', 'Executive briefing', 'Partner channel'],
+                touchpointsDetail: 'The relationship strengthens when renewal planning is tied to known value moments and shared business goals.',
+                frontOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Renewal strategy brief', detail: 'Support a value-led renewal plan backed by clear outcomes and next-step commitments.' }]
+                },
+                businessProcess: { title: 'Retention and expansion strategy', detail: 'Coordinate renewal, retention, and product expansion into a unified relationship strategy.' },
+                technicalProcess: { title: 'Renewal intelligence pipeline', detail: 'Combine customer health, usage data, and forecast signals into a single renewal view.' },
+                backOpps: {
+                  mode: 'single',
+                  items: [{ title: 'Customer value narrative', detail: 'Package the account story in a format that supports renewal, advocacy, and strategic growth.' }]
+                }
+              }
+            ],
+            summary: 'The strongest growth motion is value visibility, proactive expansion planning, and clear renewal confidence.'
+          }
+        ]
+      };
+
+      const table = document.getElementById('blueprintTable');
+      const detailPanel = document.getElementById('detailPanel');
+      const detailTag = document.getElementById('detailTag');
+      const detailTitle = document.getElementById('detailTitle');
+      const detailBody = document.getElementById('detailBody');
+      const presenterToggle = document.getElementById('presenterToggle');
+      const presenterNav = document.getElementById('presenterNav');
+      const phaseIndicator = document.getElementById('phaseIndicator');
+      const prevPhaseBtn = document.getElementById('prevPhase');
+      const nextPhaseBtn = document.getElementById('nextPhase');
+      const exitPresenterBtn = document.getElementById('exitPresenter');
+      const closePanelBtn = document.getElementById('closePanel');
+      const pageTitle = document.getElementById('page-title');
+      const pageClientDate = document.getElementById('page-client-date');
+      const blueprintScroll = document.getElementById('blueprintScroll');
+
+      const state = {
+        activePhase: 0,
+        presenterMode: false,
+        panelTimer: null,
+      };
+
+      function setPageMeta() {
+        pageTitle.textContent = CONFIG.title;
+        pageClientDate.textContent = `${CONFIG.client} · ${CONFIG.date}`;
+      }
+
+      function setDetailContent(data) {
+        if (!data) {
+          detailPanel.classList.remove('visible');
+          detailPanel.setAttribute('aria-hidden', 'true');
+          return;
+        }
+
+        detailTag.textContent = data.laneTag || 'Detail';
+        detailTitle.textContent = data.title || 'Detail';
+        detailBody.textContent = data.content || '';
+        detailPanel.classList.add('visible');
+        detailPanel.setAttribute('aria-hidden', 'false');
+      }
+
+      function clearPanelTimer() {
+        if (state.panelTimer) {
+          clearTimeout(state.panelTimer);
+          state.panelTimer = null;
+        }
+      }
+
+      function schedulePanelHide() {
+        if (state.presenterMode) return;
+        clearPanelTimer();
+        state.panelTimer = setTimeout(() => {
+          if (!detailPanel.matches(':hover')) {
+            setDetailContent(null);
+          }
+        }, 350);
+      }
+
+      function bindDrawerTrigger(element, data) {
+        if (!element) return;
+
+        const openDrawer = () => {
+          if (state.presenterMode) return;
+          setDetailContent(data);
+        };
+
+        element.addEventListener('click', openDrawer);
+        element.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openDrawer();
+          }
+        });
+      }
+
+      function getSentimentText(value) {
+        if (value === 'pain') return 'Pain';
+        if (value === 'gain') return 'Gain';
+        return 'Neutral';
+      }
+
+      function buildMiniCards(items, className = '') {
+        const container = document.createElement('div');
+        container.className = 'mini-card-row';
+        items.forEach((item) => {
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = `mini-card ${className}`.trim();
+          card.textContent = item.title;
+          card.addEventListener('click', () => {
+            if (state.presenterMode) return;
+            setDetailContent({ laneTag: 'Opportunity', title: item.title, content: item.detail || '' });
+          });
+          container.appendChild(card);
+        });
+        return container;
+      }
+
+      function renderTable() {
+        try {
+          table.innerHTML = '';
+
+          const totalActionColumns = CONFIG.phases.reduce((count, phase) => count + phase.actions.length, 0);
+          const colGroup = document.createElement('colgroup');
+          const labelCol = document.createElement('col');
+          labelCol.setAttribute('span', '1');
+          colGroup.appendChild(labelCol);
+          for (let i = 0; i < totalActionColumns; i += 1) {
+            const col = document.createElement('col');
+            colGroup.appendChild(col);
+          }
+          table.appendChild(colGroup);
+
+          const phaseHeaderRow = table.insertRow();
+          const corner = phaseHeaderRow.insertCell();
+          corner.className = 'corner-cell';
+          corner.rowSpan = 1;
+
+          CONFIG.phases.forEach((phase, phaseIndex) => {
+            const phaseCell = phaseHeaderRow.insertCell();
+            phaseCell.colSpan = phase.actions.length;
+            phaseCell.className = `phase-header-cell phase-col-${phaseIndex} ${phaseIndex === state.activePhase ? 'active-phase' : ''}`;
+            phaseCell.dataset.phaseIndex = String(phaseIndex);
+            phaseCell.textContent = phase.name;
+          });
+
+          const addSectionRow = ({ label, labelClass = '', targetCells, laneTag = 'Section', sectionStyle = '' }) => {
+            const row = table.insertRow();
+            const labelCell = row.insertCell();
+            labelCell.className = `lane-label ${labelClass}`;
+            labelCell.textContent = label;
+            targetCells.forEach((cell) => row.appendChild(cell));
+            return row;
+          };
+
+          const frontStageRow = table.insertRow();
+          const frontLabel = frontStageRow.insertCell();
+          frontLabel.className = 'lane-label section-label';
+          frontLabel.textContent = 'Front Stage';
+          for (let i = 0; i < totalActionColumns; i += 1) {
+            const cell = frontStageRow.insertCell();
+            cell.className = 'big-section-cell front-stage-empty-cell';
+          }
+
+          const actionRow = table.insertRow();
+          const actionLabel = actionRow.insertCell();
+          actionLabel.className = 'lane-label';
+          actionLabel.textContent = 'User Actions';
+          CONFIG.phases.forEach((phase, phaseIndex) => {
+            phase.actions.forEach((action) => {
+              const cell = actionRow.insertCell();
+              cell.className = `blueprint-cell action-cell ${action.sentiment} phase-col-${phaseIndex}`;
+              cell.dataset.phaseIndex = String(phaseIndex);
+
+              const pill = document.createElement('div');
+              pill.className = `sentiment-pill sentiment-${action.sentiment}`;
+              pill.innerHTML = `<span class="dot"></span>${getSentimentText(action.sentiment)}`;
+
+              const title = document.createElement('span');
+              title.className = 'action-title';
+              title.textContent = action.title;
+
+              const detail = document.createElement('div');
+              detail.className = 'inline-detail';
+              detail.textContent = action.detail;
+
+              const moreButton = document.createElement('button');
+              moreButton.type = 'button';
+              moreButton.className = 'button-inline cta-row';
+              moreButton.textContent = 'View details';
+              bindDrawerTrigger(moreButton, {
+                laneTag: 'User Action',
+                title: action.title,
+                content: action.detail,
+              });
+
+              cell.appendChild(pill);
+              cell.appendChild(title);
+              cell.appendChild(detail);
+              cell.appendChild(moreButton);
+            });
+          });
+
+          const momentRow = table.insertRow();
+          const momentLabel = momentRow.insertCell();
+          momentLabel.className = 'lane-label';
+          momentLabel.textContent = 'Moments That Matter';
+          CONFIG.phases.forEach((phase, phaseIndex) => {
+            const cell = momentRow.insertCell();
+            cell.colSpan = phase.actions.length;
+            cell.className = `blueprint-cell moment-cell phase-col-${phaseIndex}`;
+            cell.dataset.phaseIndex = String(phaseIndex);
+            const content = document.createElement('div');
+            content.className = 'moment-card';
+            const icon = document.createElement('img');
+            icon.className = 'moment-icon';
+            icon.src = '/target-black.svg';
+            icon.alt = '';
+            icon.setAttribute('aria-hidden', 'true');
+            icon.addEventListener('error', () => {
+              const fallbackIcon = document.createElement('span');
+              fallbackIcon.className = 'moment-icon moment-icon-fallback';
+              fallbackIcon.textContent = '◎';
+              fallbackIcon.setAttribute('aria-hidden', 'true');
+              icon.replaceWith(fallbackIcon);
+            }, { once: true });
+            const text = document.createElement('div');
+            text.className = 'moment-title';
+            text.textContent = phase.moment.title;
+            const detail = document.createElement('div');
+            detail.className = 'inline-detail';
+            detail.textContent = phase.moment.detail;
+            content.appendChild(icon);
+            content.appendChild(text);
+            cell.appendChild(content);
+            cell.appendChild(detail);
+          });
+
+          const touchpointsRow = table.insertRow();
+          const touchLabel = touchpointsRow.insertCell();
+          touchLabel.className = 'lane-label';
+          touchLabel.textContent = 'Touchpoints';
+          CONFIG.phases.forEach((phase, phaseIndex) => {
+            phase.actions.forEach((action) => {
+              const cell = touchpointsRow.insertCell();
+              cell.className = `blueprint-cell phase-col-${phaseIndex}`;
+              cell.dataset.phaseIndex = String(phaseIndex);
+              const list = document.createElement('ul');
+              list.className = 'touchpoint-list';
+              action.touchpoints.forEach((tp) => {
+                const item = document.createElement('li');
+                item.className = 'touchpoint-item';
+                item.textContent = tp;
+                list.appendChild(item);
+              });
+              const detail = document.createElement('div');
+              detail.className = 'inline-detail';
+              detail.textContent = action.touchpointsDetail;
+              cell.appendChild(list);
+              cell.appendChild(detail);
+            });
+          });
+
+          const frontOppRow = table.insertRow();
+          const frontOppLabel = frontOppRow.insertCell();
+          frontOppLabel.className = 'lane-label';
+          frontOppLabel.textContent = CONFIG.labels.frontStageOpps;
+          CONFIG.phases.forEach((phase, phaseIndex) => {
+            phase.actions.forEach((action) => {
+              const cell = frontOppRow.insertCell();
+              cell.className = `blueprint-cell phase-col-${phaseIndex}`;
+              cell.dataset.phaseIndex = String(phaseIndex);
+              const cardContainer = document.createElement('div');
+              cardContainer.className = 'mini-card-row';
+
+              const items = action.frontOpps.items;
+              if (action.frontOpps.mode === 'triple') {
+                items.forEach((item) => {
+                  const button = document.createElement('div');
+                  button.className = 'mini-card small';
+                  const title = document.createElement('div');
+                  title.className = 'card-title';
+                  title.textContent = item.title;
+                  const detail = document.createElement('div');
+                  detail.className = 'inline-detail';
+                  detail.textContent = item.detail;
+                  button.appendChild(title);
+                  button.appendChild(detail);
+                  cardContainer.appendChild(button);
+                });
+              } else {
+                const item = items[0];
+                const card = document.createElement('div');
+                card.className = 'mini-card';
+                const title = document.createElement('div');
+                title.className = 'card-title';
+                title.textContent = item.title;
+                const detail = document.createElement('div');
+                detail.className = 'inline-detail';
+                detail.textContent = item.detail;
+                card.appendChild(title);
+                card.appendChild(detail);
+                cardContainer.appendChild(card);
+              }
+
+              cell.appendChild(cardContainer);
+            });
+          });
+
+          const visibilityRow = table.insertRow();
+          const visibilityLabel = visibilityRow.insertCell();
+          visibilityLabel.className = 'lane-label visibility-label';
+          visibilityLabel.textContent = 'Line of Visibility';
+          const visibilityCell = visibilityRow.insertCell();
+          visibilityCell.colSpan = totalActionColumns;
+          visibilityCell.className = 'visibility-cell';
+
+          const backStageRow = table.insertRow();
+          const backLabel = backStageRow.insertCell();
+          backLabel.className = 'lane-label back-section-label';
+          backLabel.textContent = 'Back Stage';
+          for (let i = 0; i < totalActionColumns; i += 1) {
+            const cell = backStageRow.insertCell();
+            cell.className = 'big-section-cell back-section-cell back-stage-empty-cell';
+          }
+
+          const businessRow = table.insertRow();
+          const businessLabel = businessRow.insertCell();
+          businessLabel.className = 'lane-label';
+          businessLabel.textContent = 'Business Processes';
+          CONFIG.phases.forEach((phase, phaseIndex) => {
+            phase.actions.forEach((action) => {
+              const cell = businessRow.insertCell();
+              cell.className = `blueprint-cell phase-col-${phaseIndex}`;
+              cell.dataset.phaseIndex = String(phaseIndex);
+
+              const processTitle = document.createElement('div');
+              processTitle.className = 'card-title';
+              processTitle.textContent = action.businessProcess.title;
+
+              const processDetail = document.createElement('div');
+              processDetail.className = 'inline-detail';
+              processDetail.textContent = action.businessProcess.detail;
+
+              const moreButton = document.createElement('button');
+              moreButton.type = 'button';
+              moreButton.className = 'button-inline cta-row';
+              moreButton.textContent = 'View details';
+              bindDrawerTrigger(moreButton, {
+                laneTag: 'Business Process',
+                title: action.businessProcess.title,
+                content: action.businessProcess.detail,
+              });
+
+              cell.appendChild(processTitle);
+              cell.appendChild(processDetail);
+              cell.appendChild(moreButton);
+            });
+          });
+
+          const technicalRow = table.insertRow();
+          const technicalLabel = technicalRow.insertCell();
+          technicalLabel.className = 'lane-label';
+          technicalLabel.textContent = 'Technical Processes';
+          CONFIG.phases.forEach((phase, phaseIndex) => {
+            phase.actions.forEach((action) => {
+              const cell = technicalRow.insertCell();
+              cell.className = `blueprint-cell phase-col-${phaseIndex}`;
+              cell.dataset.phaseIndex = String(phaseIndex);
+
+              const processTitle = document.createElement('div');
+              processTitle.className = 'card-title';
+              processTitle.textContent = action.technicalProcess.title;
+
+              const processDetail = document.createElement('div');
+              processDetail.className = 'inline-detail';
+              processDetail.textContent = action.technicalProcess.detail;
+
+              const moreButton = document.createElement('button');
+              moreButton.type = 'button';
+              moreButton.className = 'button-inline cta-row';
+              moreButton.textContent = 'View details';
+              bindDrawerTrigger(moreButton, {
+                laneTag: 'Technical Process',
+                title: action.technicalProcess.title,
+                content: action.technicalProcess.detail,
+              });
+
+              cell.appendChild(processTitle);
+              cell.appendChild(processDetail);
+              cell.appendChild(moreButton);
+            });
+          });
+
+          const backOppRow = table.insertRow();
+          const backOppLabel = backOppRow.insertCell();
+          backOppLabel.className = 'lane-label';
+          backOppLabel.textContent = CONFIG.labels.backStageOpps;
+          CONFIG.phases.forEach((phase, phaseIndex) => {
+            phase.actions.forEach((action) => {
+              const cell = backOppRow.insertCell();
+              cell.className = `blueprint-cell phase-col-${phaseIndex}`;
+              cell.dataset.phaseIndex = String(phaseIndex);
+              const cardWrapper = document.createElement('div');
+              cardWrapper.className = 'mini-card-row';
+
+              const items = action.backOpps.items;
+              if (action.backOpps.mode === 'triple') {
+                items.forEach((item) => {
+                  const card = document.createElement('div');
+                  card.className = 'mini-card small';
+                  card.style.borderLeft = '3px solid #4338ca';
+                  const title = document.createElement('div');
+                  title.className = 'card-title';
+                  title.textContent = item.title;
+                  const detail = document.createElement('div');
+                  detail.className = 'inline-detail';
+                  detail.textContent = item.detail;
+                  card.appendChild(title);
+                  card.appendChild(detail);
+                  cardWrapper.appendChild(card);
+                });
+              } else {
+                const item = items[0];
+                const card = document.createElement('div');
+                card.className = 'mini-card';
+                card.style.borderLeft = '3px solid #4338ca';
+                const title = document.createElement('div');
+                title.className = 'card-title';
+                title.textContent = item.title;
+                const detail = document.createElement('div');
+                detail.className = 'inline-detail';
+                detail.textContent = item.detail;
+                card.appendChild(title);
+                card.appendChild(detail);
+                cardWrapper.appendChild(card);
+              }
+
+              cell.appendChild(cardWrapper);
+            });
+          });
+
+          const summaryRow = table.insertRow();
+          const summaryLabel = summaryRow.insertCell();
+          summaryLabel.className = 'lane-label';
+          summaryLabel.textContent = 'Summary';
+          CONFIG.phases.forEach((phase, phaseIndex) => {
+            const cell = summaryRow.insertCell();
+            cell.colSpan = phase.actions.length;
+            cell.className = `summary-cell phase-col-${phaseIndex}`;
+            cell.dataset.phaseIndex = String(phaseIndex);
+
+            const summaryWrap = document.createElement('div');
+            summaryWrap.className = 'summary-inline';
+
+            const label = document.createElement('div');
+            label.className = 'summary-label';
+            label.textContent = 'Phase Summary';
+
+            const text = document.createElement('div');
+            text.className = 'summary-text';
+            text.textContent = phase.summary;
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'summary-button';
+            button.textContent = 'View details';
+            bindDrawerTrigger(button, {
+              laneTag: 'Phase Summary',
+              title: phase.name,
+              content: phase.summary,
+            });
+
+            summaryWrap.appendChild(label);
+            summaryWrap.appendChild(text);
+            summaryWrap.appendChild(button);
+            cell.appendChild(summaryWrap);
+          });
+
+          document.querySelectorAll('[data-phase-index]').forEach((node) => {
+            const phaseIndex = Number(node.dataset.phaseIndex);
+            if (phaseIndex === state.activePhase) {
+              node.classList.add('phase-col-active');
+            } else {
+              node.classList.remove('phase-col-active');
+            }
+          });
+
+          if (state.presenterMode) {
+            document.querySelectorAll('.phase-header-cell').forEach((header) => {
+              header.classList.toggle('active-phase', Number(header.dataset.phaseIndex) === state.activePhase);
+            });
+          }
+        } catch (error) {
+          console.error(error);
+          table.innerHTML = '<tr><td style="padding:20px;color:#b91c1c;font-weight:700;">The blueprint could not be rendered. Check the CONFIG object and refresh the page.</td></tr>';
+        }
+      }
+
+      function updatePresenterState() {
+        document.body.classList.toggle('presenter-mode', state.presenterMode);
+        phaseIndicator.textContent = `Phase ${state.activePhase + 1} of ${CONFIG.phases.length}`;
+        if (!state.presenterMode) {
+          setDetailContent(null);
+        }
+        renderTable();
+      }
+
+      function goToPhase(nextIndex) {
+        const boundedIndex = Math.max(0, Math.min(CONFIG.phases.length - 1, nextIndex));
+        state.activePhase = boundedIndex;
+        updatePresenterState();
+        requestAnimationFrame(() => {
+          const activeHeader = document.querySelector(`.phase-header-cell[data-phase-index="${boundedIndex}"]`);
+          activeHeader?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'center' });
+        });
+      }
+
+      presenterToggle.addEventListener('click', () => {
+        state.presenterMode = !state.presenterMode;
+        updatePresenterState();
+      });
+
+      prevPhaseBtn.addEventListener('click', () => goToPhase(state.activePhase - 1));
+      nextPhaseBtn.addEventListener('click', () => goToPhase(state.activePhase + 1));
+      exitPresenterBtn.addEventListener('click', () => {
+        state.presenterMode = false;
+        updatePresenterState();
+      });
+
+      closePanelBtn.addEventListener('click', () => setDetailContent(null));
+      detailPanel.addEventListener('mouseenter', () => clearPanelTimer());
+      detailPanel.addEventListener('mouseleave', schedulePanelHide);
+      blueprintScroll.addEventListener('mouseleave', () => {
+        if (!state.presenterMode) {
+          schedulePanelHide();
+        }
+      });
+
+      window.addEventListener('keydown', (event) => {
+        if (!state.presenterMode) return;
+        if (event.key === 'ArrowRight') {
+          goToPhase(state.activePhase + 1);
+        }
+        if (event.key === 'ArrowLeft') {
+          goToPhase(state.activePhase - 1);
+        }
+        if (event.key === 'Escape') {
+          state.presenterMode = false;
+          updatePresenterState();
+        }
+      });
+
+      setPageMeta();
+      renderTable();
+      updatePresenterState();
+    </script>
+  </body>
+</html>

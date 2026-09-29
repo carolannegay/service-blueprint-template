@@ -1,0 +1,186 @@
+{
+  "title": "Northbridge Customer Journey Blueprint",
+  "subtitle": "Onboarding and support experience redesign",
+  "client": "Northbridge Health",
+  "date": "2026-09",
+  "owner": "Service Design Team",
+  "phases": [
+    {
+      "id": "phase-discovery",
+      "name": "Discover",
+      "moment": {
+        "title": "Find a plan that fits",
+        "detail": "Clear comparisons help prospective members feel confident about their choice."
+      },
+      "columns": [
+        {
+          "id": "col-1",
+          "name": "Search & Compare",
+          "action": {
+            "id": "action-1",
+            "label": "Research plans and compare providers",
+            "type": "neutral"
+          },
+          "touchpoints": [
+            { "id": "tp-1", "label": "Search engine" },
+            { "id": "tp-2", "label": "Website" },
+            { "id": "tp-3", "label": "Landing page" }
+          ],
+          "opportunities": [
+            { "id": "opp-1", "label": "Add clearer plan comparison tools" }
+          ],
+          "businessProcesses": [
+            { "id": "bp-1", "label": "Marketing campaign optimization" }
+          ],
+          "technicalProcesses": [
+            { "id": "tp-tech-1", "label": "SEO and paid search tracking" }
+          ],
+          "recommendations": [
+            { "id": "rec-1", "label": "Use plan comparison modules to reduce confusion" }
+          ]
+        },
+        {
+          "id": "col-2",
+          "name": "Initial Contact",
+          "action": {
+            "id": "action-2",
+            "label": "Request a callback for enrollment help",
+            "type": "gain"
+          },
+          "touchpoints": [
+            { "id": "tp-4", "label": "Call center" },
+            { "id": "tp-5", "label": "CRM" },
+            { "id": "tp-6", "label": "Email follow-up" }
+          ],
+          "opportunities": [
+            { "id": "opp-2", "label": "Offer faster callback routing" },
+            { "id": "opp-3", "label": "Provide next-step clarity before the call" }
+          ],
+          "businessProcesses": [
+            { "id": "bp-2", "label": "Lead intake and qualification" }
+          ],
+          "technicalProcesses": [
+            { "id": "tp-tech-2", "label": "Call routing and case management" }
+          ],
+          "recommendations": [
+            { "id": "rec-2", "label": "Route inbound leads to enrollment specialists automatically" }
+          ]
+        },
+        {
+          "id": "col-3",
+          "name": "Compare Options",
+          "action": {
+            "id": "action-3",
+            "label": "Struggle to understand coverage differences",
+            "type": "pain"
+          },
+          "touchpoints": [
+            { "id": "tp-7", "label": "Email summary" },
+            { "id": "tp-8", "label": "Website comparison page" }
+          ],
+          "opportunities": [
+            { "id": "opp-4", "label": "Simplify plan terminology and highlight trade-offs" }
+          ],
+          "businessProcesses": [
+            { "id": "bp-3", "label": "Plan eligibility review" }
+          ],
+          "technicalProcesses": [
+            { "id": "tp-tech-3", "label": "Data rules for benefit comparisons" }
+          ],
+          "recommendations": [
+            { "id": "rec-3", "label": "Add side-by-side plan summary and FAQs" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phase-activation",
+      "name": "Activate",
+      "moment": {
+        "title": "Know enrollment is complete",
+        "detail": "A clear confirmation and next steps reduce uncertainty after enrollment."
+      },
+      "columns": [
+        {
+          "id": "col-4",
+          "name": "Enroll",
+          "action": {
+            "id": "action-4",
+            "label": "Complete enrollment with confidence",
+            "type": "gain"
+          },
+          "touchpoints": [
+            { "id": "tp-9", "label": "Online form" },
+            { "id": "tp-10", "label": "Enrollment agent" },
+            { "id": "tp-11", "label": "Secure document upload" }
+          ],
+          "opportunities": [
+            { "id": "opp-5", "label": "Reduce form fatigue with progress indicators" }
+          ],
+          "businessProcesses": [
+            { "id": "bp-4", "label": "Enrollment workflow and document verification" }
+          ],
+          "technicalProcesses": [
+            { "id": "tp-tech-4", "label": "Form orchestration and secure storage" }
+          ],
+          "recommendations": [
+            { "id": "rec-4", "label": "Show progress and required documents clearly" },
+            { "id": "rec-5", "label": "Offer digital verification to minimize handoffs" }
+          ]
+        },
+        {
+          "id": "col-5",
+          "name": "Onboard",
+          "action": {
+            "id": "action-5",
+            "label": "Set up account details and access services",
+            "type": "neutral"
+          },
+          "touchpoints": [
+            { "id": "tp-12", "label": "Welcome email" },
+            { "id": "tp-13", "label": "Portal" },
+            { "id": "tp-14", "label": "Mobile app" }
+          ],
+          "opportunities": [
+            { "id": "opp-6", "label": "Offer a single first-week checklist" }
+          ],
+          "businessProcesses": [
+            { "id": "bp-5", "label": "Account activation and welcome orchestration" }
+          ],
+          "technicalProcesses": [
+            { "id": "tp-tech-5", "label": "Identity verification and profile setup" }
+          ],
+          "recommendations": [
+            { "id": "rec-6", "label": "Bundle activation emails and checklist links in one sequence" }
+          ]
+        },
+        {
+          "id": "col-6",
+          "name": "Support",
+          "action": {
+            "id": "action-6",
+            "label": "Need help when coverage or claims are unclear",
+            "type": "pain"
+          },
+          "touchpoints": [
+            { "id": "tp-15", "label": "Help center" },
+            { "id": "tp-16", "label": "Chat" },
+            { "id": "tp-17", "label": "Customer support" }
+          ],
+          "opportunities": [
+            { "id": "opp-7", "label": "Improve escalation and self-service guidance" }
+          ],
+          "businessProcesses": [
+            { "id": "bp-6", "label": "Issue intake and escalation handling" }
+          ],
+          "technicalProcesses": [
+            { "id": "tp-tech-6", "label": "Knowledge base and case routing" }
+          ],
+          "recommendations": [
+            { "id": "rec-7", "label": "Create a decision-tree support flow for common claims questions" }
+          ]
+        }
+      ]
+    }
+  ]
+}
